@@ -24,17 +24,21 @@ public class Player : MonoBehaviour
             {
                 //0일때 정방향, 1일때 역방향
                 anim.SetFloat("IsReverse", 1f);
+                gun.SetAnimIsReverse(1f);
             }
             else
             {
                 anim.SetFloat("IsReverse", 0f);
+                gun.SetAnimIsReverse(0f);
             }
 
             anim.SetBool("IsMove", true);
+            gun.SetAnimIsMove(true);
         }
         else
         {
             anim.SetBool("IsMove", false);
+            gun.SetAnimIsMove(false);
         }
 
         transform.position += dir * speed * Time.deltaTime;
@@ -42,13 +46,12 @@ public class Player : MonoBehaviour
 
     public void Shot(Vector3 shotDir)
     {
-        if(!gun.isReloaded) return;
-        gun.Shot();
+        gun.Shot(shotDir);
     }
 
     public void PlayReloadSound()
     {
-        gun.PlayReloadSound();
+        gun.PumpAction();
     }
 
     public void Reload()
