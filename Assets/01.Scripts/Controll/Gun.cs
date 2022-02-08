@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Gun : MonoBehaviour
-{
+{  
+    
+
     public AudioSource shotAudio;
     public AudioSource reloadAudio;
 

@@ -43,8 +43,6 @@ public class Player : MonoBehaviour
     public void Shot(Vector3 shotDir)
     {
         if(!gun.isReloaded) return;
-
-        anim.SetTrigger("Shot");
         gun.Shot();
     }
 
