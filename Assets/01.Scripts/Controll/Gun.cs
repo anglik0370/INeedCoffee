@@ -6,24 +6,46 @@ public class Gun : MonoBehaviour
 {  
     Animator anim;
 
+    [Header("프리팹들")]
+    public Bullet bulletPrefab;
+    public MuzzleFlash muzzleFlashPrefab;
+    public Catridge CatridgePreafab;
+    public HitEffectParticle hitEffectParticlePrefab;
+
+    [Header("풀링할 부모")]
+    public Transform poolParentTrm;
+
+    [Header("총구 위치")]
     public Transform leftMuzzleTrm;
     public Transform rightMuzzleTrm;
 
+    [Header("약실 위치")]
     public Transform leftEjectionTrm;
     public Transform rightEjectionTrm;
 
+    [Header("오디오 소스들")]
     public AudioSource shotAudio;
     public AudioSource reloadAudio;
     public AudioSource cantShotAudio;
-
+    
+    [Header("산탄 범위")]
     public float spreadAngle;
+    [Header("산탄 갯수")]
+    public int bulletAmount;
 
-    public bool isReloaded = true;
+    [Header("펌프액션 여부")]
+    public bool isPumped = true;
+    [Header("Spirte Filp 여부")]
     public bool isFlip = false;
 
     private void Awake() 
     {
         anim = GetComponent<Animator>();
+
+        PoolManager.CreatePool<Bullet>(bulletPrefab.gameObject, poolParentTrm, 15);
+        PoolManager.CreatePool<MuzzleFlash>(muzzleFlashPrefab.gameObject, poolParentTrm, 10);
+        PoolManager.CreatePool<Catridge>(CatridgePreafab.gameObject, poolParentTrm, 13);
+        PoolManager.CreatePool<HitEffectParticle>(hitEffectParticlePrefab.gameObject, poolParentTrm, 10);
     }
 
     public void SetAnimIsMove(bool isMove)
@@ -47,36 +69,40 @@ public class Gun : MonoBehaviour
     
     public bool Shot(Vector3 shotDir)
     {
-        if(isReloaded)
+        if(isPumped)
         {
             shotAudio.Play();
             anim.SetTrigger("Shot");
 
-            CameraShake.Instance.ShakeCamera(5f, 0.2f);
+            CameraShake.Instance.ShakeCamera(5f, 0.5f);
+
+            MuzzleFlash muzzleFlash = PoolManager.GetItem<MuzzleFlash>();
 
             //총알 발사부분
             if(!isFlip)
             {
-                MuzzleFlashPoolManager.Instance.GetOrCreate(rightMuzzleTrm.position);
+                muzzleFlash.SetPosition(rightMuzzleTrm.position);
 
-                for(int i = 0; i < 5; i++)
+                for(int i = 0; i < bulletAmount; i++)
                 {
-                    Bullet bullet = BulletPoolManager.Instance.GetOrCreate(rightMuzzleTrm.position);
+                    Bullet bullet = PoolManager.GetItem<Bullet>();
+                    bullet.SetPosition(rightMuzzleTrm.position);
                     bullet.Shot(CalcAngle(shotDir));
                 }
             }
             else
             {
-                MuzzleFlashPoolManager.Instance.GetOrCreate(leftMuzzleTrm.position);
+                muzzleFlash.SetPosition(leftMuzzleTrm.position);
 
-                for(int i = 0; i < 5; i++)
+                for(int i = 0; i < bulletAmount; i++)
                 {
-                    Bullet bullet = BulletPoolManager.Instance.GetOrCreate(leftMuzzleTrm.position);
+                    Bullet bullet = PoolManager.GetItem<Bullet>();
+                    bullet.SetPosition(leftMuzzleTrm.position);
                     bullet.Shot(CalcAngle(shotDir));
                 }
             }
 
-            isReloaded = false;
+            isPumped = false;
         }
         else
         {
@@ -84,7 +110,7 @@ public class Gun : MonoBehaviour
             cantShotAudio.Play();
         }
 
-        return isReloaded;
+        return isPumped;
     }
 
     private Vector3 CalcAngle(Vector3 shotDir)
@@ -95,15 +121,15 @@ public class Gun : MonoBehaviour
 
     public void PumpAction()
     {
-        Catridge catridge = null;
+        Catridge catridge = PoolManager.GetItem<Catridge>();
 
         if(!isFlip)
         {
-            catridge = CatridgePoolManager.Instance.GetOrCreate(rightEjectionTrm.position);
+            catridge.SetPosition(rightEjectionTrm.position);
         }
         else
         {
-            catridge = CatridgePoolManager.Instance.GetOrCreate(leftEjectionTrm.position);
+            catridge.SetPosition(leftEjectionTrm.position);
         }
 
         catridge.Ejection(isFlip);
@@ -113,6 +139,6 @@ public class Gun : MonoBehaviour
 
     public void Reload()
     {
-        isReloaded = true;
+        isPumped = true;
     }
 }

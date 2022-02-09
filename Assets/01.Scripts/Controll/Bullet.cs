@@ -6,8 +6,18 @@ public class Bullet : MonoBehaviour
 {
     Rigidbody2D rigid;
 
-    public float disableTime;
+    [Header("총알 피해량")]
+    public float damage;
+
+    [Header("총알 속도")]
     public float speed;
+    [Header("밀어내는 힘")]
+    public float pushPower;
+
+    [Header("비활성화 시간")]
+    public float disableTime;
+
+    private const string ENEMY_TAG = "ENEMY";
 
     private WaitForSeconds ws;
     private Coroutine co;
@@ -27,6 +37,20 @@ public class Bullet : MonoBehaviour
     {
         StopCoroutine(co);
         rigid.velocity = Vector3.zero;
+    }
+
+    private void OnTriggerEnter2D(Collider2D other) 
+    {
+        if(other.CompareTag(ENEMY_TAG))
+        {
+            Enemy enemy = other.gameObject.GetComponent<Enemy>();
+            enemy.OnDamage(damage, rigid.velocity.normalized * pushPower);
+
+            HitEffectParticle hitEffectParticle = PoolManager.GetItem<HitEffectParticle>();
+            hitEffectParticle.SetPosition(transform.position);
+
+            gameObject.SetActive(false);
+        }
     }
 
     public void SetPosition(Vector3 pos)
