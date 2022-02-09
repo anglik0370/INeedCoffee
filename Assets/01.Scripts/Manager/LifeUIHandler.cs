@@ -5,6 +5,7 @@ using System.Linq;
 
 public class LifeUIHandler : MonoBehaviour
 {
+    public PlayerHitEffectUI playerHitEffectUI;
     private List<LifeUI> lifeUIList;
 
     private void Awake() 
@@ -14,6 +15,8 @@ public class LifeUIHandler : MonoBehaviour
 
     public void RemoveLife()
     {
+        playerHitEffectUI.Play();
+
         for(int i = lifeUIList.Count - 1; i >= 0; i--)
         {
             if(!lifeUIList[i].isEmpty)
