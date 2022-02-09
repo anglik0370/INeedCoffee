@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public Bullet bulletPrefab;
     public MuzzleFlash muzzleFlashPrefab;
     public Catridge CatridgePreafab;
+    public Enemy enemyPrefab;
     public EnemyHitEffect hitEffectPrefab;
     public EnemyDeadEffect deadEffectPrefab;
     public EnemyAttackEffect enemyAttackEffectPrefab;
@@ -36,6 +37,7 @@ public class GameManager : MonoBehaviour
         PoolManager.CreatePool<Bullet>(bulletPrefab.gameObject, poolManagerTrm, 15);
         PoolManager.CreatePool<MuzzleFlash>(muzzleFlashPrefab.gameObject, poolManagerTrm, 10);
         PoolManager.CreatePool<Catridge>(CatridgePreafab.gameObject, poolManagerTrm, 13);
+        PoolManager.CreatePool<Enemy>(enemyPrefab.gameObject, poolManagerTrm, 15);
         PoolManager.CreatePool<EnemyHitEffect>(hitEffectPrefab.gameObject, poolManagerTrm, 10);
         PoolManager.CreatePool<EnemyDeadEffect>(deadEffectPrefab.gameObject, poolManagerTrm, 10);
         PoolManager.CreatePool<EnemyAttackEffect>(enemyAttackEffectPrefab.gameObject, poolManagerTrm, 10);

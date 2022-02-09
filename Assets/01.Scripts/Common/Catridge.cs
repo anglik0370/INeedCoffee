@@ -13,8 +13,7 @@ public class Catridge : MonoBehaviour
     public Vector3 popRot;
     public Vector3 dropPos;
 
-    private const float POP_DURATION = 0.2f;
-    private const float DROP_DURATION = 0.3f;
+    private const float TWEEN_DURATION = 0.25f;
 
     private Sequence seq;
     private WaitForSeconds ws;
@@ -43,22 +42,22 @@ public class Catridge : MonoBehaviour
             transform.rotation = Quaternion.Euler(originRot);
 
             //위로 튀는부분
-            seq.Append(transform.DOMove(transform.position + popPos, POP_DURATION));
-            seq.Join(transform.DORotate(transform.rotation * popRot, POP_DURATION));
+            seq.Append(transform.DOMove(transform.position + popPos, TWEEN_DURATION));
+            seq.Join(transform.DORotate(transform.rotation * popRot, TWEEN_DURATION));
 
-            seq.Append(transform.DOMove(transform.position + dropPos, DROP_DURATION));
-            seq.Join(transform.DORotate(transform.rotation * new Vector3(0, 0, Random.Range(-180, 180)), DROP_DURATION));
+            seq.Append(transform.DOMove(transform.position + dropPos, TWEEN_DURATION * 2));
+            seq.Join(transform.DORotate(transform.rotation * new Vector3(0, 0, Random.Range(-180, 180)), TWEEN_DURATION * 2));
         }
         else
         {
             transform.rotation = Quaternion.Euler(-originRot);
 
             //위로 튀는부분
-            seq.Append(transform.DOMove(transform.position + new Vector3(-popPos.x, popPos.y, popPos.z), POP_DURATION));
-            seq.Join(transform.DORotate(transform.rotation * popRot, DROP_DURATION));
+            seq.Append(transform.DOMove(transform.position + new Vector3(-popPos.x, popPos.y, popPos.z), TWEEN_DURATION));
+            seq.Join(transform.DORotate(transform.rotation * popRot, TWEEN_DURATION));
 
-            seq.Append(transform.DOMove(transform.position + new Vector3(-dropPos.x, dropPos.y, dropPos.z), POP_DURATION));
-            seq.Join(transform.DORotate(transform.rotation * new Vector3(0, 0, Random.Range(-180, 180)), DROP_DURATION));
+            seq.Append(transform.DOMove(transform.position + new Vector3(-dropPos.x, dropPos.y, dropPos.z), TWEEN_DURATION * 2));
+            seq.Join(transform.DORotate(transform.rotation * new Vector3(0, 0, Random.Range(-180, 180)), TWEEN_DURATION * 2));
         }
     }
 

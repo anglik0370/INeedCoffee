@@ -46,7 +46,7 @@ public class Enemy : MonoBehaviour
 
     private void Update() 
     {
-        dir = player.transform.position - transform.position;
+        dir = (player.transform.position - transform.position).normalized;
 
         if(dir.x < 0)
         {
@@ -85,8 +85,9 @@ public class Enemy : MonoBehaviour
         {
             seq.Kill();
             StopCoroutine(co);
-            sr.material.SetInt("_IsMask", 0);
         }
+
+        curHp = maxHp;
     }
 
     public void Attack()
@@ -146,7 +147,14 @@ public class Enemy : MonoBehaviour
         EnemyDeadEffect deadEffect = PoolManager.GetItem<EnemyDeadEffect>();
         deadEffect.SetPosition(transform.position);
 
+        sr.material.SetInt("_IsMask", 0);
+
         gameObject.SetActive(false);
+    }
+
+    public void SetPosition(Vector3 pos)
+    {
+        transform.position = pos;
     }
 
     private IEnumerator SetOriginColor()
