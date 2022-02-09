@@ -65,5 +65,8 @@ public class Player : MonoBehaviour
     public void OnDamage()
     {
         GameManager.Instance.PlayerDamaged();
+
+        PlayerHitSoundEffect soundEffect = PoolManager.GetItem<PlayerHitSoundEffect>();
+        soundEffect.Play();
     }
 }

@@ -144,7 +144,7 @@ public class Enemy : MonoBehaviour
         //실제로 대미지 받는 부분
         if(curHp - damage <= 0)
         {
-            Die();
+            Die(false);
         }
 
         curHp -= damage;
@@ -152,14 +152,20 @@ public class Enemy : MonoBehaviour
         healthBar.UpdateHealthBar(maxHp, curHp);
     }
 
-    public void Die()
+    public void Die(bool isGameOverDie)
     {
+        if(!isGameOverDie)
+        {
+            GameManager.Instance.EnemyDead();
+
+            EnemyDeadSoundEffect soundEffect = PoolManager.GetItem<EnemyDeadSoundEffect>();
+            soundEffect.Play();
+        }
+
         curHp = 0;
         healthBar.UpdateHealthBar(maxHp, curHp);
 
         damageQueue.Clear();
-
-        GameManager.Instance.EnemyDead();
 
         EnemyDeadEffect deadEffect = PoolManager.GetItem<EnemyDeadEffect>();
         deadEffect.SetPosition(transform.position);

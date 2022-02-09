@@ -555,6 +555,9 @@ MonoBehaviour:
   hitEffectPrefab: {fileID: -3201237490618490386, guid: 010ae44834e896e43bb29c4c43cc7db3, type: 3}
   deadEffectPrefab: {fileID: 226336685769034410, guid: 37303b93a49a75c41818122749ae6d5e, type: 3}
   enemyAttackEffectPrefab: {fileID: 3840225391121336903, guid: 0b3ae2f175d781f4293b219059d33d1d, type: 3}
+  catridgeDropSoundEffectPrefab: {fileID: 2497049486595579451, guid: 051c1c5581f1c234abd530ed4cea1fa6, type: 3}
+  enemyDeadSoundEffectPrefab: {fileID: 4376529611271939093, guid: 18be91508ee229c4c9debb4a6319ab45, type: 3}
+  playerHitSoundEffectPrefab: {fileID: -3177448825246006194, guid: 69b4af7c5410e81479d0fbecb3029a81, type: 3}
   lifeUIHandler: {fileID: 887151664}
   killCountUI: {fileID: 502593643}
   poolManagerTrm: {fileID: 826591976}

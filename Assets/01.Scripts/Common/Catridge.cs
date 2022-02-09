@@ -45,7 +45,13 @@ public class Catridge : MonoBehaviour
             seq.Append(transform.DOMove(transform.position + popPos, TWEEN_DURATION));
             seq.Join(transform.DORotate(transform.rotation * popRot, TWEEN_DURATION));
 
-            seq.Append(transform.DOMove(transform.position + dropPos, TWEEN_DURATION * 2));
+            seq.AppendCallback(() => 
+            {
+                CatridgeDropSoundEffect soundEffect = PoolManager.GetItem<CatridgeDropSoundEffect>();
+                soundEffect.Play();
+            });
+
+            seq.Join(transform.DOMove(transform.position + dropPos, TWEEN_DURATION * 2));
             seq.Join(transform.DORotate(transform.rotation * new Vector3(0, 0, Random.Range(-180, 180)), TWEEN_DURATION * 2));
         }
         else
@@ -56,7 +62,13 @@ public class Catridge : MonoBehaviour
             seq.Append(transform.DOMove(transform.position + new Vector3(-popPos.x, popPos.y, popPos.z), TWEEN_DURATION));
             seq.Join(transform.DORotate(transform.rotation * popRot, TWEEN_DURATION));
 
-            seq.Append(transform.DOMove(transform.position + new Vector3(-dropPos.x, dropPos.y, dropPos.z), TWEEN_DURATION * 2));
+            seq.AppendCallback(() => 
+            {
+                CatridgeDropSoundEffect soundEffect = PoolManager.GetItem<CatridgeDropSoundEffect>();
+                soundEffect.Play();
+            });
+
+            seq.Join(transform.DOMove(transform.position + new Vector3(-dropPos.x, dropPos.y, dropPos.z), TWEEN_DURATION * 2));
             seq.Join(transform.DORotate(transform.rotation * new Vector3(0, 0, Random.Range(-180, 180)), TWEEN_DURATION * 2));
         }
     }

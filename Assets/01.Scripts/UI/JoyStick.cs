@@ -18,8 +18,20 @@ public class JoyStick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     public bool isTouch = false;
 
+    private bool isGameStart = false;
+
     private void Start() 
     {
+        isGameStart = true;
+
+        GameManager.Instance.GameOver += () =>
+        {
+            isGameStart = false;
+
+            isTouch = false;
+            player.Move(Vector3.zero);
+        };
+
         parentRect = GetComponent<RectTransform>();
         backgroundRect = transform.Find("background").GetComponent<RectTransform>();
         leverRect = backgroundRect.transform.Find("lever").GetComponent<RectTransform>();
@@ -49,12 +61,16 @@ public class JoyStick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     public void OnDrag(PointerEventData eventData)
     {
+        if(!isGameStart) return;
+
         OnTouch(eventData.position);
         isTouch = true;
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        if(!isGameStart) return;
+
         parentRect.transform.position = eventData.position;
 
         OnTouch(eventData.position);
@@ -63,6 +79,8 @@ public class JoyStick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        if(!isGameStart) return;
+
         leverRect.localPosition = Vector2.zero;
 
         shotDir = moveDir * -1; //벡터의 반대방향 구하기
