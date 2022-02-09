@@ -105,6 +105,8 @@ public class Gun : MonoBehaviour
         {
             catridge = CatridgePoolManager.Instance.GetOrCreate(leftEjectionTrm.position);
         }
+
+        catridge.Ejection(isFlip);
         
         reloadAudio.Play();
     }
