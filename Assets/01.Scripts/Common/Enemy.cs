@@ -144,8 +144,6 @@ public class Enemy : MonoBehaviour
         //실제로 대미지 받는 부분
         if(curHp - damage <= 0)
         {
-            curHp = 0;
-            healthBar.UpdateHealthBar(maxHp, curHp);
             Die();
         }
 
@@ -154,8 +152,11 @@ public class Enemy : MonoBehaviour
         healthBar.UpdateHealthBar(maxHp, curHp);
     }
 
-    private void Die()
+    public void Die()
     {
+        curHp = 0;
+        healthBar.UpdateHealthBar(maxHp, curHp);
+
         damageQueue.Clear();
 
         GameManager.Instance.EnemyDead();

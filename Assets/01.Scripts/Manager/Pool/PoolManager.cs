@@ -22,6 +22,13 @@ public class PoolManager
         return pool.GetOrCreate();
     }
 
+    public static List<T> GetItemList<T>() where T : MonoBehaviour
+    {
+        Type t = typeof(T);
+        ObjectPool<T> pool = (ObjectPool<T>)poolDic[t.ToString()];
+        return pool.GetList();
+    }
+
     public static void DisableAll<T>() where T : MonoBehaviour
     {
         Type t = typeof(T);

@@ -13,6 +13,8 @@ public class WaveManager : MonoBehaviour
     private WaitForSeconds ws;
     private Coroutine co;
 
+    private bool isGameStart = false;
+
     private void Awake() 
     {
         if(Instance == null)
@@ -25,6 +27,13 @@ public class WaveManager : MonoBehaviour
 
     private void Start() 
     {
+        isGameStart = true;
+
+        GameManager.Instance.GameOver += () =>
+        {
+            isGameStart = false;
+        };
+
         co = StartCoroutine(EnemySpawnRoutine());
     }
 
@@ -46,7 +55,7 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator EnemySpawnRoutine()
     {
-        while(true)
+        while(isGameStart)
         {
             SpawnEnemyRandomPos(player.transform.position);
             yield return ws;

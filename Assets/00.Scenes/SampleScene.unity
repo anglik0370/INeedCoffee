@@ -421,7 +421,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 424481933}
   spawnRangeRadius: 9
-  spawnDelay: 3
+  spawnDelay: 1
 --- !u!1 &200338540
 GameObject:
   m_ObjectHideFlags: 0

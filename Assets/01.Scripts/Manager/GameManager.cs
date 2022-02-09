@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -30,6 +31,10 @@ public class GameManager : MonoBehaviour
 
     [Header("킬카운트")]
     public int killCount;
+    
+    //이벤트
+    public Action GameStart = () => {};
+    public Action GameOver = () => {};
 
     private void Awake() 
     {
@@ -49,6 +54,17 @@ public class GameManager : MonoBehaviour
 
     private void Start() 
     {
+        GameOver += () =>
+        {
+            foreach(Enemy enemy in PoolManager.GetItemList<Enemy>())
+            {
+                enemy.Die();
+
+                killCount --;
+                killCountUI.UpdateCountText(killCount);
+            }
+        };
+
         life = maxLife;
 
         killCount = 0;
@@ -64,7 +80,7 @@ public class GameManager : MonoBehaviour
     {
         if(life - 1 == 0)
         {
-            //게임오버
+            GameOver?.Invoke();
         }
 
         life--;

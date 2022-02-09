@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class ObjectPool<T> : IPool where T : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class ObjectPool<T> : IPool where T : MonoBehaviour
     {
         this.prefab = prefab;
         this.parent = parent;
-        m_queue = new Queue<T>(); //TÅ¸ÀÔ Å¥ »ý¼º
+        m_queue = new Queue<T>(); //TÅ¸ï¿½ï¿½ Å¥ ï¿½ï¿½ï¿½ï¿½
 
         for (int i = 0; i < count; i++)
         {
@@ -25,7 +26,7 @@ public class ObjectPool<T> : IPool where T : MonoBehaviour
 
     public T GetOrCreate()
     {
-        T t = m_queue.Peek(); // Å¥¿¡¼­ Peek¿¬»êÀº? 
+        T t = m_queue.Peek(); // Å¥ï¿½ï¿½ï¿½ï¿½ Peekï¿½ï¿½ï¿½ï¿½ï¿½ï¿½? 
         if (t.gameObject.activeSelf)
         {
             GameObject temp = GameObject.Instantiate(prefab, parent);
@@ -33,12 +34,17 @@ public class ObjectPool<T> : IPool where T : MonoBehaviour
         }
         else
         {
-            t = m_queue.Dequeue(); //¾µ ¼ö ÀÖÀ¸´Ï±î ±×³É »Ì¾Æ
+            t = m_queue.Dequeue(); //ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½×³ï¿½ ï¿½Ì¾ï¿½
             t.gameObject.SetActive(true);
         }
 
         m_queue.Enqueue(t);
         return t;
+    }
+
+    public List<T> GetList()
+    {
+        return m_queue.ToList();
     }
 
     public void DisableAll()
