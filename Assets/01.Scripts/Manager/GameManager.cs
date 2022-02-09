@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
 
     [Header("핸들러")]
     public LifeUIHandler lifeUIHandler;
+    public KillCountUI killCountUI;
 
     [Header("풀매니저")]
     public Transform poolManagerTrm;
@@ -26,6 +27,9 @@ public class GameManager : MonoBehaviour
     [Header("라이프")]
     public float maxLife;
     public float life;
+
+    [Header("킬카운트")]
+    public int killCount;
 
     private void Awake() 
     {
@@ -46,6 +50,9 @@ public class GameManager : MonoBehaviour
     private void Start() 
     {
         life = maxLife;
+
+        killCount = 0;
+        killCountUI.UpdateCountText(killCount);
     }
 
     public static Player GetPlayer()
@@ -53,7 +60,7 @@ public class GameManager : MonoBehaviour
         return Instance.player;
     }
 
-    public void GetDamage()
+    public void PlayerDamaged()
     {
         if(life - 1 == 0)
         {
@@ -62,5 +69,11 @@ public class GameManager : MonoBehaviour
 
         life--;
         lifeUIHandler.RemoveLife();
+    }
+
+    public void EnemyDead()
+    {
+        killCount++;
+        killCountUI.UpdateCountText(killCount);
     }
 }

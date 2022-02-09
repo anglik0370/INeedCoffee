@@ -8,6 +8,8 @@ public class Player : MonoBehaviour
     SpriteRenderer sr;
 
     public Gun gun;
+
+    public float limitDistance;
     public float speed;
 
     private void Awake() 
@@ -18,6 +20,17 @@ public class Player : MonoBehaviour
 
     public void Move(Vector3 dir)
     {
+        if((transform.position + dir * speed * Time.deltaTime).x > limitDistance 
+            || (transform.position + dir * speed * Time.deltaTime).x < -limitDistance)
+        {
+            dir.x = 0;
+        }
+        if((transform.position + dir * speed * Time.deltaTime).y > limitDistance
+            || (transform.position + dir * speed * Time.deltaTime).y < -limitDistance)
+        {
+            dir.y = 0;
+        }
+
         if(dir != Vector3.zero)
         {
             if(dir.x > 0)
@@ -51,6 +64,6 @@ public class Player : MonoBehaviour
 
     public void OnDamage()
     {
-        GameManager.Instance.GetDamage();
+        GameManager.Instance.PlayerDamaged();
     }
 }

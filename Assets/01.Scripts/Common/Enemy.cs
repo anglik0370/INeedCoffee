@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 using DG.Tweening;
 
 public class Enemy : MonoBehaviour
@@ -28,6 +29,8 @@ public class Enemy : MonoBehaviour
     private float attackTimer;
     public float attackDistance;
 
+    public Queue<Action> damageQueue = new Queue<Action>();
+
     private void Awake() 
     {
         healthBar = GetComponentInChildren<HealthBar>();
@@ -42,6 +45,7 @@ public class Enemy : MonoBehaviour
     {
         player = GameManager.GetPlayer();
         curHp = maxHp;
+        damageQueue.Clear();
     }
 
     private void Update() 
@@ -71,6 +75,11 @@ public class Enemy : MonoBehaviour
         if(attackTimer > 0)
         {
             attackTimer -= Time.deltaTime;
+        }
+
+        if(damageQueue.Count > 0)
+        {
+            damageQueue.Dequeue()?.Invoke();
         }
     }
 
@@ -130,7 +139,7 @@ public class Enemy : MonoBehaviour
             StartCoroutine(SetOriginColor());
         }
 
-        seq.Join(healthBar.transform.DOShakePosition(TWEEN_DURATION, 0.1f, 50));
+        seq.Join(healthBar.transform.DOShakePosition(TWEEN_DURATION, 0.2f, 30));
 
         //실제로 대미지 받는 부분
         if(curHp - damage <= 0)
@@ -147,6 +156,10 @@ public class Enemy : MonoBehaviour
 
     private void Die()
     {
+        damageQueue.Clear();
+
+        GameManager.Instance.EnemyDead();
+
         EnemyDeadEffect deadEffect = PoolManager.GetItem<EnemyDeadEffect>();
         deadEffect.SetPosition(transform.position);
 

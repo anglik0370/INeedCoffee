@@ -45,7 +45,7 @@ public class Bullet : MonoBehaviour
         {
             Enemy enemy = other.gameObject.GetComponent<Enemy>();
 
-            enemy.OnDamage(damage, rigid.velocity.normalized * pushPower);
+            enemy.damageQueue.Enqueue(() => enemy.OnDamage(damage, rigid.velocity.normalized * pushPower));
 
             EnemyHitEffect hitEffect = PoolManager.GetItem<EnemyHitEffect>();
             hitEffect.SetPosition(transform.position);

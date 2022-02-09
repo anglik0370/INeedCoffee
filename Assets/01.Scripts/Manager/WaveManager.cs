@@ -38,8 +38,8 @@ public class WaveManager : MonoBehaviour
     private void SpawnEnemyRandomPos(Vector3 playerPos)
     {
         Enemy enemy = PoolManager.GetItem<Enemy>();
-        Vector2 randomPos = new Vector2(Mathf.Cos(Random.Range(-180, 180) * Mathf.Deg2Rad) * spawnRangeRadius, 
-                                        Mathf.Sin(Random.Range(-180, 180) * Mathf.Deg2Rad) * spawnRangeRadius);
+        Vector2 randomPos = new Vector2(Mathf.Cos(Random.Range(-180, 180) * Mathf.Deg2Rad) * spawnRangeRadius + playerPos.x, 
+                                        Mathf.Sin(Random.Range(-180, 180) * Mathf.Deg2Rad) * spawnRangeRadius + playerPos.y);
 
         enemy.SetPosition(randomPos);
     }
