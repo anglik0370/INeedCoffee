@@ -74,12 +74,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos() 
-    {
-        Gizmos.DrawWireSphere(transform.position, attackDistance);
-    }
-
-    private void OnDisable() 
+    private void OnEnable() 
     {
         if(co != null)
         {
@@ -87,7 +82,15 @@ public class Enemy : MonoBehaviour
             StopCoroutine(co);
         }
 
+        sr.material.SetInt("_IsMask", 0);
         curHp = maxHp;
+
+        healthBar.UpdateHealthBar(maxHp, curHp);
+    }
+
+    private void OnDrawGizmos() 
+    {
+        Gizmos.DrawWireSphere(transform.position, attackDistance);
     }
 
     public void Attack()
@@ -146,8 +149,6 @@ public class Enemy : MonoBehaviour
     {
         EnemyDeadEffect deadEffect = PoolManager.GetItem<EnemyDeadEffect>();
         deadEffect.SetPosition(transform.position);
-
-        sr.material.SetInt("_IsMask", 0);
 
         gameObject.SetActive(false);
     }

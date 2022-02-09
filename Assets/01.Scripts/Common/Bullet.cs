@@ -44,6 +44,7 @@ public class Bullet : MonoBehaviour
         if(other.CompareTag(ENEMY_TAG))
         {
             Enemy enemy = other.gameObject.GetComponent<Enemy>();
+
             enemy.OnDamage(damage, rigid.velocity.normalized * pushPower);
 
             EnemyHitEffect hitEffect = PoolManager.GetItem<EnemyHitEffect>();
