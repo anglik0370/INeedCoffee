@@ -135,7 +135,7 @@ public class EnemyManager : MonoBehaviour
     {
         enemyHealth += ENEMY_HEALTH_INCREMENT;
 
-        //print($"EnemyHealthUpgraded");
+        GameManager.Aleart("적의 체력이 늘어났습니다!");
 
         EnemyHealthUpgraded(enemyHealth, ENEMY_HEALTH_INCREMENT);
     }
@@ -144,7 +144,7 @@ public class EnemyManager : MonoBehaviour
     {
         enemyMoveSpeed += ENEMY_MOVESPEED_INCREMENT;
 
-        //print($"EnemyMoveSpeedUpgraded");
+        GameManager.Aleart("적의 이동속도가 증가했습니다!");
 
         EnemyMoveSpeedUpgraded(enemyMoveSpeed);
     }
@@ -153,7 +153,7 @@ public class EnemyManager : MonoBehaviour
     {
         enemySpawnDelay += ENEMY_SPAWNDELAY_INCREMENT;
 
-        //print($"EnemySpawnDelayUpgraded");
+        GameManager.Aleart("적의 생성속도가 빨라졌습니다!");
 
         EnemySpawnDelayUpgraded(enemySpawnDelay);
     }

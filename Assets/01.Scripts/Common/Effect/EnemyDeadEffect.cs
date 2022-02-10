@@ -31,6 +31,8 @@ public class EnemyDeadEffect : MonoBehaviour
     public void SetPosition(Vector3 pos)
     {
         transform.position = pos;
+
+        transform.rotation = Quaternion.Euler(new Vector3(0, 0, Random.Range(-180, 180)));
     }
 
     private IEnumerator ParticleRoutine()

@@ -10,7 +10,7 @@ public class TimerUI : MonoBehaviour
     private Text timerText;
 
     private const float ADD_ROTATE_VALUE = 180;
-    private const float TWEEN_DURAITION = 1f;
+    private const float TWEEN_DURATION = 1f;
 
     private Sequence seq;
 
@@ -27,15 +27,15 @@ public class TimerUI : MonoBehaviour
         float sec = elapsedTime % 60;
         float min = 0;
 
-        while(min != 0)
+        elapsedTime -= 60;
+
+        while(elapsedTime > 0)
         {
-            sec -= 60;
+            elapsedTime -= 60;
             min++;
         }
 
-        print(min);
-
-        timerText.text = $"{min.ToString("00")}:{sec.ToString("00")}";
+        timerText.text = $"{min}:{sec.ToString("00")}";
     }
 
     public void RollTimerImg()
@@ -47,9 +47,9 @@ public class TimerUI : MonoBehaviour
         
         seq = DOTween.Sequence();
 
-        seq.Append(timerImg.transform.DORotate(new Vector3(0, 0, ADD_ROTATE_VALUE), TWEEN_DURAITION));
-        seq.AppendInterval(TWEEN_DURAITION);
-        seq.Append(timerImg.transform.DOLocalRotate(new Vector3(0, 0, ADD_ROTATE_VALUE), TWEEN_DURAITION * 2));
+        seq.Append(timerImg.transform.DORotate(new Vector3(0, 0, ADD_ROTATE_VALUE), TWEEN_DURATION));
+        seq.AppendInterval(TWEEN_DURATION);
+        seq.Append(timerImg.transform.DOLocalRotate(new Vector3(0, 0, ADD_ROTATE_VALUE), TWEEN_DURATION * 2));
         seq.AppendCallback(() => timerImg.transform.rotation = Quaternion.Euler(Vector3.zero));
     }
 }

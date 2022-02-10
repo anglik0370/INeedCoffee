@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     [Header("핸들러")]
     public LifeUIHandler lifeUIHandler;
     public KillCountUI killCountUI;
+    public AleartUI aleartUI;
 
     [Header("풀매니저")]
     public Transform poolManagerTrm;
@@ -74,6 +75,11 @@ public class GameManager : MonoBehaviour
     public static Player GetPlayer()
     {
         return Instance.player;
+    }
+
+    public static void Aleart(string msg)
+    {
+        Instance.aleartUI.Aleart(msg);
     }
 
     public void GameStart()
