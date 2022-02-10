@@ -26,4 +26,13 @@ public class LifeUIHandler : MonoBehaviour
             }
         }
     }
+
+    public void ReFillLife()
+    {
+        foreach(LifeUI lifeUI in lifeUIList)
+        {
+            lifeUI.Fill();
+            
+        }
+    }
 }

@@ -29,10 +29,13 @@ public class GameManager : MonoBehaviour
 
     [Header("킬카운트")]
     public int killCount;
+
+    [Header("디버그")]
+    public bool isInvincibility = false;
     
     //이벤트
-    private Action GameStart = () => {};
-    private Action GameOver = () => {};
+    private Action GameStartActon = () => {};
+    private Action GameOverAction = () => {};
 
     private void Awake() 
     {
@@ -50,7 +53,19 @@ public class GameManager : MonoBehaviour
 
     private void Start() 
     {
+        SubGameStart(() => 
+        {
+            life = maxLife;
+
+            lifeUIHandler.ReFillLife();
+
+            killCount = 0;
+            killCountUI.UpdateCountText(killCount);
+        });
+
         life = maxLife;
+
+        lifeUIHandler.ReFillLife();
 
         killCount = 0;
         killCountUI.UpdateCountText(killCount);
@@ -61,21 +76,28 @@ public class GameManager : MonoBehaviour
         return Instance.player;
     }
 
+    public void GameStart()
+    {
+        GameStartActon?.Invoke();
+    }
+
     public void SubGameStart(Action Callback)
     {
-        GameStart += Callback;
+        GameStartActon += Callback;
     }
 
     public void SubGameOver(Action Callback)
     {
-        GameOver += Callback;
+        GameOverAction += Callback;
     }
 
     public void PlayerDamaged()
     {
+        if(isInvincibility) return;
+
         if(life - 1 == 0)
         {
-            GameOver?.Invoke();
+            GameOverAction?.Invoke();
         }
 
         life--;

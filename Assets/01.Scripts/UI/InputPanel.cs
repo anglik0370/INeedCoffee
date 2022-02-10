@@ -10,9 +10,14 @@ public class InputPanel : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoi
 
     private bool isGameStart = false;
 
+    private void Awake() 
+    {
+        isGameStart = false;
+    }
+
     private void Start() 
     {
-        isGameStart = true;
+        GameManager.Instance.SubGameStart(() => isGameStart = true);
 
         GameManager.Instance.SubGameOver(() =>
         {

@@ -20,9 +20,14 @@ public class JoyStick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     private bool isGameStart = false;
 
+    private void Awake() 
+    {
+        isGameStart = false;
+    }
+
     private void Start() 
     {
-        isGameStart = true;
+        GameManager.Instance.SubGameStart(() => isGameStart = true);
 
         GameManager.Instance.SubGameOver(() =>
         {

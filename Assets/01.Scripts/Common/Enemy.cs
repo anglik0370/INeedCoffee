@@ -18,15 +18,18 @@ public class Enemy : MonoBehaviour
     private const float COROUTINE_DURATION = 0.2f;
     private WaitForSeconds ws;
 
-    public float maxHp;
-    public float curHp;
+    [SerializeField]
+    private float maxHp;
+    [SerializeField]
+    private float curHp;
 
-    public float speed;
-    public Vector3 dir;
+    [SerializeField]
+    private float speed;
+    [SerializeField]
+    private Vector3 dir;
 
-    public float attackSpeed;
-    private float attackTimer;
-    public float attackDistance;
+    [SerializeField]
+    private float attackDistance;
 
     public Queue<Action> damageQueue = new Queue<Action>();
 
@@ -53,9 +56,6 @@ public class Enemy : MonoBehaviour
         {
             this.speed = moveSpeed;
         });
-
-        curHp = maxHp;
-        damageQueue.Clear();
     }
 
     private void Update() 
@@ -75,16 +75,8 @@ public class Enemy : MonoBehaviour
 
         if(EnemyManager.Instance.GetPlayerDist(transform.position) <= attackDistance)
         {
-            if(attackTimer <= 0)
-            {
-                EnemyManager.Instance.AddAttackReq(transform.position);
-                attackTimer += attackSpeed;
-            }
-        }
-
-        if(attackTimer > 0)
-        {
-            attackTimer -= Time.deltaTime;
+            EnemyManager.Instance.AddAttackReq(transform.position);
+            gameObject.SetActive(false);
         }
 
         if(damageQueue.Count > 0)
@@ -95,6 +87,22 @@ public class Enemy : MonoBehaviour
 
     private void OnEnable() 
     {
+        maxHp = EnemyManager.Instance.EnemyHealth;
+        speed = EnemyManager.Instance.EnemyMoveSpeed;
+
+        if(maxHp == 0)
+        {
+            maxHp = EnemyManager.ORIGIN_ENEMY_HEALTH;
+        }
+
+        if(speed == 0)
+        {
+            speed = EnemyManager.ORIGIN_ENEMY_MOVESPEED;
+        }
+
+        curHp = maxHp;
+        healthBar.UpdateHealthBar(maxHp, curHp);
+
         if(co != null)
         {
             seq.Kill();
@@ -102,9 +110,6 @@ public class Enemy : MonoBehaviour
         }
 
         sr.material.SetInt("_IsMask", 0);
-        curHp = maxHp;
-
-        healthBar.UpdateHealthBar(maxHp, curHp);
     }
 
     private void OnDrawGizmos() 

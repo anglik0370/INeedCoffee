@@ -9,6 +9,7 @@ public class TimeManager : MonoBehaviour
     public TimerUI timerUI;
 
     private float timer;
+    private float upgradeTimer;
 
     private bool isGameStart = false;
 
@@ -18,18 +19,27 @@ public class TimeManager : MonoBehaviour
         {
             Instance = this;
         }
+
+        isGameStart = false;
     }
 
     private void Start() 
     {
-        timer = 0f;
-
-        isGameStart = true;
+        GameManager.Instance.SubGameStart(() => 
+        {
+            isGameStart = true;
+            
+            timer = 0f;
+            timerUI.SetTimerText(timer);
+        });
 
         GameManager.Instance.SubGameOver(() =>
         {
             isGameStart = false;
         });
+
+        timer = 0f;
+        upgradeTimer = EnemyManager.UPGRADE_DELAY;
     }
 
     private void Update() 
@@ -38,5 +48,13 @@ public class TimeManager : MonoBehaviour
 
         timer += Time.deltaTime;
         timerUI.SetTimerText(timer);
+
+        upgradeTimer -= Time.deltaTime;
+
+        if(upgradeTimer <= 0)
+        {       
+            EnemyManager.Instance.RandomEnemyUpgrade();
+            upgradeTimer += EnemyManager.UPGRADE_DELAY;
+        }
     }
 }

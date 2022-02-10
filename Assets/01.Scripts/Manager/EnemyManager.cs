@@ -11,7 +11,6 @@ public class EnemyManager : MonoBehaviour
     public Enemy enemyPrefab;
     public EnemyHitEffect hitEffectPrefab;
     public EnemyDeadEffect deadEffectPrefab;
-    public EnemyAttackEffect attackEffectPrefab;
     public EnemyDeadSoundEffect deadSoundEffectPrefab;
 
     [Header("풀매니저")]
@@ -22,24 +21,32 @@ public class EnemyManager : MonoBehaviour
     private Queue<Action> deadSoundQueue = new Queue<Action>();
     private Queue<Action> deadEffectQueue = new Queue<Action>();
     private Queue<Action> playerAttackQueue = new Queue<Action>();
-    private Queue<Action> attackEffectQueue = new Queue<Action>();
 
-    private const float ORIGIN_ENEMY_HEALTH = 10;
-    private const float ORIGIN_ENEMY_MOVESPEED = 2;
-    private const float ORIGIN_ENEMY_SPAWNDELAY = 3;
+    public const float UPGRADE_DELAY = 5;
 
-    private const float ENEMY_HEALTH_INCREMENT = 2;
-    private const float ENEMY_MOVESPEED_INCREMENT = 0.1f;
-    private const float ENEMY_SPAWNDELAY_INCREMENT = -0.15f;
+    public const float ORIGIN_ENEMY_HEALTH = 10;
+    public const float ORIGIN_ENEMY_MOVESPEED = 2;
+    public const float ORIGIN_ENEMY_SPAWNDELAY = 5;
 
+    private const float ENEMY_HEALTH_INCREMENT = 1;
+    private const float ENEMY_MOVESPEED_INCREMENT = 0.15f;
+    private const float ENEMY_SPAWNDELAY_INCREMENT = -0.1f;
+
+    public float EnemyHealth => enemyHealth;
+    public float EnemyMoveSpeed => enemyMoveSpeed;
+
+    [SerializeField]
     private float enemyHealth;
+    [SerializeField]
     private float enemyMoveSpeed;
+    [SerializeField]
     private float enemySpawnDelay;
 
     private Action<float, float> EnemyHealthUpgraded = (a, b) => {};
     private Action<float> EnemyMoveSpeedUpgraded = a => {};
     private Action<float> EnemySpawnDelayUpgraded = a => {};
 
+    private List<Action> upgradeList = new List<Action>();
 
     private bool isGameStart = false;
 
@@ -53,37 +60,52 @@ public class EnemyManager : MonoBehaviour
         PoolManager.CreatePool<Enemy>(enemyPrefab.gameObject, poolManagerTrm, 30);
         PoolManager.CreatePool<EnemyHitEffect>(hitEffectPrefab.gameObject, poolManagerTrm, 10);
         PoolManager.CreatePool<EnemyDeadEffect>(deadEffectPrefab.gameObject, poolManagerTrm, 10);
-        PoolManager.CreatePool<EnemyAttackEffect>(attackEffectPrefab.gameObject, poolManagerTrm, 10);
         PoolManager.CreatePool<EnemyDeadSoundEffect>(deadSoundEffectPrefab.gameObject, poolManagerTrm, 30);
+
+        upgradeList.Add(UpgradeHealth);
+        upgradeList.Add(UpgradeMoveSpeed);
+        upgradeList.Add(UpgradeSpawnDelay);
 
         enemyHealth = ORIGIN_ENEMY_HEALTH;
         enemyMoveSpeed = ORIGIN_ENEMY_MOVESPEED;
         enemySpawnDelay = ORIGIN_ENEMY_SPAWNDELAY;
+
+        isGameStart = false;
     }
 
     private void Start() 
     {
-        isGameStart = true;
-
         player = GameManager.GetPlayer();
+
+        GameManager.Instance.SubGameStart(() => 
+        {
+            isGameStart = true;
+        });
 
         GameManager.Instance.SubGameOver(() =>
         {
+            isGameStart = false;
+
             EnemyDeadSoundEffect soundEffect = PoolManager.GetItem<EnemyDeadSoundEffect>();
             soundEffect.Play();
 
             foreach(Enemy enemy in PoolManager.GetItemList<Enemy>())
             {
                 if(!enemy.gameObject.activeSelf) continue;
+                
+                EnemyDeadEffect deadEffect = PoolManager.GetItem<EnemyDeadEffect>();
+                deadEffect.SetPosition(enemy.transform.position);
 
-                enemy.Die();
+                enemy.gameObject.SetActive(false);
             }
+
+            deadSoundQueue.Clear();
+            deadEffectQueue.Clear();
+            playerAttackQueue.Clear();
 
             enemyHealth = ORIGIN_ENEMY_HEALTH;
             enemyMoveSpeed = ORIGIN_ENEMY_MOVESPEED;
             enemySpawnDelay = ORIGIN_ENEMY_SPAWNDELAY;
-
-            isGameStart = false;
         });
     }
 
@@ -97,42 +119,50 @@ public class EnemyManager : MonoBehaviour
             deadSoundQueue.Clear();
         }
 
-        while(deadEffectQueue.Count > 0)
-        {
-            deadEffectQueue.Dequeue()?.Invoke();
-        }
-
         if(playerAttackQueue.Count > 0)
         {
             playerAttackQueue.Dequeue()?.Invoke();
             playerAttackQueue.Clear();
         }
 
-        while(attackEffectQueue.Count > 0)
+        while(deadEffectQueue.Count > 0)
         {
-            attackEffectQueue.Dequeue()?.Invoke();
+            deadEffectQueue.Dequeue()?.Invoke();
         }
     }
 
-    public void UpgradeHealth()
+    private void UpgradeHealth()
     {
         enemyHealth += ENEMY_HEALTH_INCREMENT;
+
+        //print($"EnemyHealthUpgraded");
 
         EnemyHealthUpgraded(enemyHealth, ENEMY_HEALTH_INCREMENT);
     }
 
-    public void UpgradeMoveSpeed()
+    private void UpgradeMoveSpeed()
     {
         enemyMoveSpeed += ENEMY_MOVESPEED_INCREMENT;
+
+        //print($"EnemyMoveSpeedUpgraded");
 
         EnemyMoveSpeedUpgraded(enemyMoveSpeed);
     }
 
-    public void UpgradeSpawnDelay()
+    private void UpgradeSpawnDelay()
     {
         enemySpawnDelay += ENEMY_SPAWNDELAY_INCREMENT;
 
+        //print($"EnemySpawnDelayUpgraded");
+
         EnemySpawnDelayUpgraded(enemySpawnDelay);
+    }
+
+    public void RandomEnemyUpgrade()
+    {
+        int rand = UnityEngine.Random.Range(0, upgradeList.Count);
+
+        upgradeList[rand]?.Invoke();
     }
 
     public void SubUpgradeHealth(Action<float, float> CallBack)
@@ -171,11 +201,16 @@ public class EnemyManager : MonoBehaviour
     {
         playerAttackQueue.Enqueue(() => player.OnDamage());
 
-        attackEffectQueue.Enqueue(() => 
+        deadEffectQueue.Enqueue(() => 
         {
-            EnemyAttackEffect attackEffect = PoolManager.GetItem<EnemyAttackEffect>();
-            attackEffect.SetPosition(enemyPos);
-            attackEffect.SetRotation((player.transform.position - enemyPos).normalized);
+            EnemyDeadEffect deadEffect = PoolManager.GetItem<EnemyDeadEffect>();
+            deadEffect.SetPosition(enemyPos);
+        });
+
+        deadSoundQueue.Enqueue(() =>
+        {
+            EnemyDeadSoundEffect soundEffect = PoolManager.GetItem<EnemyDeadSoundEffect>();
+            soundEffect.Play();
         });
     }
 

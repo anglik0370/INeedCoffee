@@ -17,4 +17,10 @@ public class LifeUI : MonoBehaviour
         isEmpty = true;
         fillImg.DOFade(0f, FADE_DURATION);
     }
+
+    public void Fill()
+    {
+        fillImg.color = new Color(1, 1, 1, 1);
+        isEmpty = false;
+    }
 }

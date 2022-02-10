@@ -29,9 +29,11 @@ public class TimerUI : MonoBehaviour
 
         while(min != 0)
         {
-            min -= 60;
+            sec -= 60;
             min++;
         }
+
+        print(min);
 
         timerText.text = $"{min.ToString("00")}:{sec.ToString("00")}";
     }

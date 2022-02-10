@@ -22,12 +22,22 @@ public class WaveManager : MonoBehaviour
             Instance = this;
         }
 
-        ws = new WaitForSeconds(spawnDelay);
+        isGameStart = false;
     }
 
     private void Start() 
     {
-        isGameStart = true;
+        GameManager.Instance.SubGameStart(() => 
+        {
+            isGameStart = true;
+
+            if(co != null)
+            {
+                StopCoroutine(co);
+            }
+
+            co = StartCoroutine(EnemySpawnRoutine());
+        });
 
         GameManager.Instance.SubGameOver(() =>
         {
@@ -40,7 +50,8 @@ public class WaveManager : MonoBehaviour
             ws = new WaitForSeconds(this.spawnDelay);
         });
 
-        co = StartCoroutine(EnemySpawnRoutine());
+        spawnDelay = EnemyManager.ORIGIN_ENEMY_SPAWNDELAY;
+        ws = new WaitForSeconds(spawnDelay);
     }
 
     private void OnDrawGizmos() 
