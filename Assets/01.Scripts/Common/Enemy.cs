@@ -9,7 +9,6 @@ public class Enemy : MonoBehaviour
     Rigidbody2D rigid;
     SpriteRenderer sr;
 
-    Player player;
     HealthBar healthBar;
 
     Sequence seq;
@@ -43,14 +42,13 @@ public class Enemy : MonoBehaviour
 
     private void Start() 
     {
-        player = GameManager.GetPlayer();
         curHp = maxHp;
         damageQueue.Clear();
     }
 
     private void Update() 
     {
-        dir = (player.transform.position - transform.position).normalized;
+        dir = EnemyManager.Instance.GetTowardPlayerDir(transform.position);
 
         if(dir.x < 0)
         {
@@ -63,11 +61,11 @@ public class Enemy : MonoBehaviour
 
         transform.position += dir * speed * Time.deltaTime;
 
-        if(Vector3.Distance(player.transform.position, transform.position) <= attackDistance)
+        if(EnemyManager.Instance.GetPlayerDist(transform.position) <= attackDistance)
         {
             if(attackTimer <= 0)
             {
-                Attack();
+                EnemyManager.Instance.AddAttackReq(transform.position);
                 attackTimer += attackSpeed;
             }
         }
@@ -100,15 +98,6 @@ public class Enemy : MonoBehaviour
     private void OnDrawGizmos() 
     {
         Gizmos.DrawWireSphere(transform.position, attackDistance);
-    }
-
-    public void Attack()
-    {
-        player.OnDamage();
-
-        EnemyAttackEffect attackEffect = PoolManager.GetItem<EnemyAttackEffect>();
-        attackEffect.SetPosition(transform.position);
-        attackEffect.SetRotation((player.transform.position - transform.position).normalized);
     }
 
     public void OnDamage(float damage, Vector3 push)
@@ -144,7 +133,7 @@ public class Enemy : MonoBehaviour
         //실제로 대미지 받는 부분
         if(curHp - damage <= 0)
         {
-            Die(false);
+            Die();
         }
 
         curHp -= damage;
@@ -152,23 +141,14 @@ public class Enemy : MonoBehaviour
         healthBar.UpdateHealthBar(maxHp, curHp);
     }
 
-    public void Die(bool isGameOverDie)
+    public void Die()
     {
-        if(!isGameOverDie)
-        {
-            GameManager.Instance.EnemyDead();
-
-            EnemyDeadSoundEffect soundEffect = PoolManager.GetItem<EnemyDeadSoundEffect>();
-            soundEffect.Play();
-        }
-
         curHp = 0;
         healthBar.UpdateHealthBar(maxHp, curHp);
 
         damageQueue.Clear();
 
-        EnemyDeadEffect deadEffect = PoolManager.GetItem<EnemyDeadEffect>();
-        deadEffect.SetPosition(transform.position);
+        EnemyManager.Instance.AddDeadReq(transform.position);
 
         gameObject.SetActive(false);
     }

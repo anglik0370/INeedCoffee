@@ -13,12 +13,7 @@ public class GameManager : MonoBehaviour
     public Bullet bulletPrefab;
     public MuzzleFlash muzzleFlashPrefab;
     public Catridge CatridgePreafab;
-    public Enemy enemyPrefab;
-    public EnemyHitEffect hitEffectPrefab;
-    public EnemyDeadEffect deadEffectPrefab;
-    public EnemyAttackEffect enemyAttackEffectPrefab;
     public CatridgeDropSoundEffect catridgeDropSoundEffectPrefab;
-    public EnemyDeadSoundEffect enemyDeadSoundEffectPrefab;
     public PlayerHitSoundEffect playerHitSoundEffectPrefab;
 
     [Header("핸들러")]
@@ -49,30 +44,12 @@ public class GameManager : MonoBehaviour
         PoolManager.CreatePool<Bullet>(bulletPrefab.gameObject, poolManagerTrm, 15);
         PoolManager.CreatePool<MuzzleFlash>(muzzleFlashPrefab.gameObject, poolManagerTrm, 10);
         PoolManager.CreatePool<Catridge>(CatridgePreafab.gameObject, poolManagerTrm, 13);
-        PoolManager.CreatePool<Enemy>(enemyPrefab.gameObject, poolManagerTrm, 30);
-        PoolManager.CreatePool<EnemyHitEffect>(hitEffectPrefab.gameObject, poolManagerTrm, 10);
-        PoolManager.CreatePool<EnemyDeadEffect>(deadEffectPrefab.gameObject, poolManagerTrm, 10);
-        PoolManager.CreatePool<EnemyAttackEffect>(enemyAttackEffectPrefab.gameObject, poolManagerTrm, 10);
         PoolManager.CreatePool<CatridgeDropSoundEffect>(catridgeDropSoundEffectPrefab.gameObject, poolManagerTrm, 10);
-        PoolManager.CreatePool<EnemyDeadSoundEffect>(enemyDeadSoundEffectPrefab.gameObject, poolManagerTrm, 30);
         PoolManager.CreatePool<PlayerHitSoundEffect>(playerHitSoundEffectPrefab.gameObject, poolManagerTrm, 3);
     }
 
     private void Start() 
     {
-        GameOver += () =>
-        {
-            EnemyDeadSoundEffect soundEffect = PoolManager.GetItem<EnemyDeadSoundEffect>();
-            soundEffect.Play();
-
-            foreach(Enemy enemy in PoolManager.GetItemList<Enemy>())
-            {
-                if(!enemy.gameObject.activeSelf) continue;
-
-                enemy.Die(true);
-            }
-        };
-
         life = maxLife;
 
         killCount = 0;
