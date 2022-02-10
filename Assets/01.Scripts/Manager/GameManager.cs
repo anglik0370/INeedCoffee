@@ -69,12 +69,12 @@ public class GameManager : MonoBehaviour
         PoolManager.CreatePool<CatridgeDropSoundEffect>(catridgeDropSoundEffectPrefab.gameObject, poolManagerTrm, 10);
         PoolManager.CreatePool<PlayerHitSoundEffect>(playerHitSoundEffectPrefab.gameObject, poolManagerTrm, 3);
 
-        if(PlayerPrefs.HasKey(HIGHSCORE_KEY))
+        if(!PlayerPrefs.HasKey(HIGHSCORE_KEY))
         {
             PlayerPrefs.SetInt(HIGHSCORE_KEY, 0);
         }
 
-        highScore = PlayerPrefs.GetInt("HighScore");
+        highScore = PlayerPrefs.GetInt(HIGHSCORE_KEY);
 
         ChangeCvs(false);
     }
@@ -92,13 +92,13 @@ public class GameManager : MonoBehaviour
             killCount = 0;
             killCountUI.UpdateCountText(killCount);
 
-            player.transform.position = Vector3.zero;
             player.gameObject.SetActive(true);
         });
 
         SubGameOver(() => 
         {
             player.gameObject.SetActive(false);
+            player.transform.position = Vector3.zero;
 
             int score = Mathf.RoundToInt((lifeTime * 2) * killCount);
 
@@ -130,7 +130,6 @@ public class GameManager : MonoBehaviour
         });
 
         life = maxLife;
-
         lifeUIHandler.ReFillLife();
 
         killCount = 0;
@@ -174,6 +173,11 @@ public class GameManager : MonoBehaviour
     public void GameStart()
     {
         GameStartActon?.Invoke();
+    }
+
+    public void BackToMain()
+    {
+        BackToMainAction?.Invoke();
     }
 
     public void QuitGame()

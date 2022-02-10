@@ -138,6 +138,7 @@ public class Enemy : MonoBehaviour
 
         if(seq != null)
         {
+            seq.Complete();
             seq.Kill();
             seq = DOTween.Sequence();
         }

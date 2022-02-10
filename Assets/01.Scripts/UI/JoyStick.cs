@@ -91,6 +91,8 @@ public class JoyStick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
         OnTouch(eventData.position);
         isTouch = true;
+
+        SoundManager.Instance.PlayPlayerMoveSound(true);
     }
 
     public void OnPointerUp(PointerEventData eventData)
@@ -107,5 +109,7 @@ public class JoyStick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         player.Shot(shotDir);
 
         isTouch = false;
+
+        SoundManager.Instance.PlayPlayerMoveSound(false);
     }
 }

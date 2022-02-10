@@ -53,6 +53,7 @@ public class GameOverPanel : MonoBehaviour
         {
             if(!canTouchBtn) return;
 
+            GameManager.Instance.BackToMain();
             GameManager.Instance.ChangeCvs(false);
             pauseBtn.interactable = true;
             Close();
@@ -118,6 +119,7 @@ public class GameOverPanel : MonoBehaviour
             tmp2 = x;
             scoreText.text = $"점수 : {tmp2}";
         }, score, TWEEN_DURATION));
+        seq.AppendInterval(TWEEN_DURATION / 2);
         seq.AppendCallback(() => 
         {
             highScoreText.text = $"최고점수 : {highScore}";
