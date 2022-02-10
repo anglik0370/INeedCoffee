@@ -29,7 +29,7 @@ public class TimerUI : MonoBehaviour
 
         elapsedTime -= 60;
 
-        while(elapsedTime > 0)
+        while(elapsedTime >= 0)
         {
             elapsedTime -= 60;
             min++;

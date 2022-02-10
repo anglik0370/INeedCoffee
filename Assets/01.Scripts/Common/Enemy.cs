@@ -113,7 +113,8 @@ public class Enemy : MonoBehaviour
 
         curHp = maxHp;
         healthBar.UpdateHealthBar(maxHp, curHp);
-
+        
+        healthBar.ResetTransform();
         if(co != null)
         {
             seq.Kill();

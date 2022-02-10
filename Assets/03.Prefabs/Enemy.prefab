@@ -97,6 +97,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthBar: {fileID: 5022067621898269656}
+  originPos: {x: 0.05, y: 0.6, z: 0}
 --- !u!1 &5022067621013503690
 GameObject:
   m_ObjectHideFlags: 0
@@ -219,7 +220,6 @@ MonoBehaviour:
   curHp: 0
   speed: 3
   dir: {x: 0, y: 0, z: 0}
-  attackSpeed: 3
   attackDistance: 0.6
 --- !u!58 &5022067621013502260
 CircleCollider2D:

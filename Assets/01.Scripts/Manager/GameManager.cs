@@ -40,6 +40,10 @@ public class GameManager : MonoBehaviour
     [Header("생존시간")]
     public float lifeTime;
 
+    [Header("점수")]
+    public int score;
+    public int highScore;
+
     [Header("디버그")]
     public bool isInvincibility = false;
     
@@ -49,6 +53,8 @@ public class GameManager : MonoBehaviour
 
     private Action BackToMainAction = () => {};
     private Action<bool> GamePauseAction = isPause => {};
+
+    private const string HIGHSCORE_KEY = "HighScore";
 
     private void Awake() 
     {
@@ -62,6 +68,13 @@ public class GameManager : MonoBehaviour
         PoolManager.CreatePool<Catridge>(CatridgePreafab.gameObject, poolManagerTrm, 13);
         PoolManager.CreatePool<CatridgeDropSoundEffect>(catridgeDropSoundEffectPrefab.gameObject, poolManagerTrm, 10);
         PoolManager.CreatePool<PlayerHitSoundEffect>(playerHitSoundEffectPrefab.gameObject, poolManagerTrm, 3);
+
+        if(PlayerPrefs.HasKey(HIGHSCORE_KEY))
+        {
+            PlayerPrefs.SetInt(HIGHSCORE_KEY, 0);
+        }
+
+        highScore = PlayerPrefs.GetInt("HighScore");
 
         ChangeCvs(false);
     }
@@ -86,7 +99,16 @@ public class GameManager : MonoBehaviour
         SubGameOver(() => 
         {
             player.gameObject.SetActive(false);
-            gameOverPanel.Open(killCount, Mathf.RoundToInt(lifeTime), 0, Mathf.RoundToInt((lifeTime * 2) * killCount));
+
+            int score = Mathf.RoundToInt((lifeTime * 2) * killCount);
+
+            if(score > highScore)
+            {
+                PlayerPrefs.SetInt(HIGHSCORE_KEY, score);
+                highScore = score;
+            }
+
+            gameOverPanel.Open(killCount, Mathf.RoundToInt(lifeTime), highScore, score);
         });
 
         pausePanel.SubPauseOnClick(() => 
