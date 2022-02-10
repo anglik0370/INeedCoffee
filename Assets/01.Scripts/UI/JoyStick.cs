@@ -24,13 +24,13 @@ public class JoyStick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     {
         isGameStart = true;
 
-        GameManager.Instance.GameOver += () =>
+        GameManager.Instance.SubGameOver(() =>
         {
             isGameStart = false;
 
             isTouch = false;
             player.Move(Vector3.zero);
-        };
+        });
 
         parentRect = GetComponent<RectTransform>();
         backgroundRect = transform.Find("background").GetComponent<RectTransform>();

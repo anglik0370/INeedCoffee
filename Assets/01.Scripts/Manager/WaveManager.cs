@@ -29,10 +29,16 @@ public class WaveManager : MonoBehaviour
     {
         isGameStart = true;
 
-        GameManager.Instance.GameOver += () =>
+        GameManager.Instance.SubGameOver(() =>
         {
             isGameStart = false;
-        };
+        });
+
+        EnemyManager.Instance.SubUpgradeSpawnDelay(spawnDelay => 
+        {
+            this.spawnDelay = spawnDelay;
+            ws = new WaitForSeconds(this.spawnDelay);
+        });
 
         co = StartCoroutine(EnemySpawnRoutine());
     }

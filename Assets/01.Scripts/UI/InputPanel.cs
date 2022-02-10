@@ -14,14 +14,14 @@ public class InputPanel : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoi
     {
         isGameStart = true;
 
-        GameManager.Instance.GameOver += () =>
+        GameManager.Instance.SubGameOver(() =>
         {
             isGameStart = false;
 
             joyStickGroup.alpha = 0f;
             joyStickGroup.interactable = false;
             joyStickGroup.blocksRaycasts = false;
-        };
+        });
     }
 
     public void OnPointerDown(PointerEventData eventData)

@@ -31,8 +31,8 @@ public class GameManager : MonoBehaviour
     public int killCount;
     
     //이벤트
-    public Action GameStart = () => {};
-    public Action GameOver = () => {};
+    private Action GameStart = () => {};
+    private Action GameOver = () => {};
 
     private void Awake() 
     {
@@ -59,6 +59,16 @@ public class GameManager : MonoBehaviour
     public static Player GetPlayer()
     {
         return Instance.player;
+    }
+
+    public void SubGameStart(Action Callback)
+    {
+        GameStart += Callback;
+    }
+
+    public void SubGameOver(Action Callback)
+    {
+        GameOver += Callback;
     }
 
     public void PlayerDamaged()

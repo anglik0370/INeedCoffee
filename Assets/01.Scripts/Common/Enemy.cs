@@ -42,6 +42,18 @@ public class Enemy : MonoBehaviour
 
     private void Start() 
     {
+        EnemyManager.Instance.SubUpgradeHealth((health, increment) => 
+        {
+            maxHp = health;
+            curHp += increment;
+            curHp = Mathf.Clamp(curHp, 0, maxHp);
+        });
+
+        EnemyManager.Instance.SubUpgradeMoveSpeed(moveSpeed => 
+        {
+            this.speed = moveSpeed;
+        });
+
         curHp = maxHp;
         damageQueue.Clear();
     }
@@ -156,6 +168,11 @@ public class Enemy : MonoBehaviour
     public void SetPosition(Vector3 pos)
     {
         transform.position = pos;
+    }
+
+    public void UpdateHealthBar()
+    {
+        healthBar.UpdateHealthBar(maxHp, curHp);
     }
 
     private IEnumerator SetOriginColor()

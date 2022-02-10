@@ -26,10 +26,10 @@ public class TimeManager : MonoBehaviour
 
         isGameStart = true;
 
-        GameManager.Instance.GameOver += () =>
+        GameManager.Instance.SubGameOver(() =>
         {
             isGameStart = false;
-        };
+        });
     }
 
     private void Update() 

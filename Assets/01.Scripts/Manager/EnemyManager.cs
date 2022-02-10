@@ -24,6 +24,23 @@ public class EnemyManager : MonoBehaviour
     private Queue<Action> playerAttackQueue = new Queue<Action>();
     private Queue<Action> attackEffectQueue = new Queue<Action>();
 
+    private const float ORIGIN_ENEMY_HEALTH = 10;
+    private const float ORIGIN_ENEMY_MOVESPEED = 2;
+    private const float ORIGIN_ENEMY_SPAWNDELAY = 3;
+
+    private const float ENEMY_HEALTH_INCREMENT = 2;
+    private const float ENEMY_MOVESPEED_INCREMENT = 0.1f;
+    private const float ENEMY_SPAWNDELAY_INCREMENT = -0.15f;
+
+    private float enemyHealth;
+    private float enemyMoveSpeed;
+    private float enemySpawnDelay;
+
+    private Action<float, float> EnemyHealthUpgraded = (a, b) => {};
+    private Action<float> EnemyMoveSpeedUpgraded = a => {};
+    private Action<float> EnemySpawnDelayUpgraded = a => {};
+
+
     private bool isGameStart = false;
 
     private void Awake() 
@@ -38,6 +55,10 @@ public class EnemyManager : MonoBehaviour
         PoolManager.CreatePool<EnemyDeadEffect>(deadEffectPrefab.gameObject, poolManagerTrm, 10);
         PoolManager.CreatePool<EnemyAttackEffect>(attackEffectPrefab.gameObject, poolManagerTrm, 10);
         PoolManager.CreatePool<EnemyDeadSoundEffect>(deadSoundEffectPrefab.gameObject, poolManagerTrm, 30);
+
+        enemyHealth = ORIGIN_ENEMY_HEALTH;
+        enemyMoveSpeed = ORIGIN_ENEMY_MOVESPEED;
+        enemySpawnDelay = ORIGIN_ENEMY_SPAWNDELAY;
     }
 
     private void Start() 
@@ -46,7 +67,7 @@ public class EnemyManager : MonoBehaviour
 
         player = GameManager.GetPlayer();
 
-        GameManager.Instance.GameOver += () =>
+        GameManager.Instance.SubGameOver(() =>
         {
             EnemyDeadSoundEffect soundEffect = PoolManager.GetItem<EnemyDeadSoundEffect>();
             soundEffect.Play();
@@ -58,8 +79,12 @@ public class EnemyManager : MonoBehaviour
                 enemy.Die();
             }
 
+            enemyHealth = ORIGIN_ENEMY_HEALTH;
+            enemyMoveSpeed = ORIGIN_ENEMY_MOVESPEED;
+            enemySpawnDelay = ORIGIN_ENEMY_SPAWNDELAY;
+
             isGameStart = false;
-        };
+        });
     }
 
     private void Update() 
@@ -87,6 +112,42 @@ public class EnemyManager : MonoBehaviour
         {
             attackEffectQueue.Dequeue()?.Invoke();
         }
+    }
+
+    public void UpgradeHealth()
+    {
+        enemyHealth += ENEMY_HEALTH_INCREMENT;
+
+        EnemyHealthUpgraded(enemyHealth, ENEMY_HEALTH_INCREMENT);
+    }
+
+    public void UpgradeMoveSpeed()
+    {
+        enemyMoveSpeed += ENEMY_MOVESPEED_INCREMENT;
+
+        EnemyMoveSpeedUpgraded(enemyMoveSpeed);
+    }
+
+    public void UpgradeSpawnDelay()
+    {
+        enemySpawnDelay += ENEMY_SPAWNDELAY_INCREMENT;
+
+        EnemySpawnDelayUpgraded(enemySpawnDelay);
+    }
+
+    public void SubUpgradeHealth(Action<float, float> CallBack)
+    {
+        EnemyHealthUpgraded += CallBack;
+    }
+
+    public void SubUpgradeMoveSpeed(Action<float> CallBack)
+    {
+        EnemyMoveSpeedUpgraded += CallBack;
+    }
+
+    public void SubUpgradeSpawnDelay(Action<float> CallBack)
+    {
+        EnemySpawnDelayUpgraded += CallBack;
     }
 
     public void AddDeadReq(Vector3 enemyPos)
