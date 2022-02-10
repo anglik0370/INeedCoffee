@@ -22,15 +22,17 @@ public class EnemyManager : MonoBehaviour
     private Queue<Action> deadEffectQueue = new Queue<Action>();
     private Queue<Action> playerAttackQueue = new Queue<Action>();
 
-    public const float UPGRADE_DELAY = 5;
+    public const float UPGRADE_DELAY = 10;
 
     public const float ORIGIN_ENEMY_HEALTH = 10;
     public const float ORIGIN_ENEMY_MOVESPEED = 2;
     public const float ORIGIN_ENEMY_SPAWNDELAY = 5;
 
     private const float ENEMY_HEALTH_INCREMENT = 1;
-    private const float ENEMY_MOVESPEED_INCREMENT = 0.15f;
-    private const float ENEMY_SPAWNDELAY_INCREMENT = -0.1f;
+    private const float ENEMY_MOVESPEED_INCREMENT = 0.2f;
+    private const float ENEMY_SPAWNDELAY_INCREMENT = -0.3f;
+
+    private const float ENEMY_SPAWNDELAY_MIN = 0.5f;
 
     public float EnemyHealth => enemyHealth;
     public float EnemyMoveSpeed => enemyMoveSpeed;
@@ -49,6 +51,7 @@ public class EnemyManager : MonoBehaviour
     private List<Action> upgradeList = new List<Action>();
 
     private bool isGameStart = false;
+    private bool isPause = false;
 
     private void Awake() 
     {
@@ -71,6 +74,7 @@ public class EnemyManager : MonoBehaviour
         enemySpawnDelay = ORIGIN_ENEMY_SPAWNDELAY;
 
         isGameStart = false;
+        isPause = false;
     }
 
     private void Start() 
@@ -107,11 +111,36 @@ public class EnemyManager : MonoBehaviour
             enemyMoveSpeed = ORIGIN_ENEMY_MOVESPEED;
             enemySpawnDelay = ORIGIN_ENEMY_SPAWNDELAY;
         });
+
+        GameManager.Instance.SubBackToMain(() => 
+        {
+            isGameStart = false;
+
+            foreach(Enemy enemy in PoolManager.GetItemList<Enemy>())
+            {
+                if(!enemy.gameObject.activeSelf) continue;
+
+                enemy.gameObject.SetActive(false);
+            }
+
+            deadSoundQueue.Clear();
+            deadEffectQueue.Clear();
+            playerAttackQueue.Clear();
+
+            enemyHealth = ORIGIN_ENEMY_HEALTH;
+            enemyMoveSpeed = ORIGIN_ENEMY_MOVESPEED;
+            enemySpawnDelay = ORIGIN_ENEMY_SPAWNDELAY;
+        });
+
+        GameManager.Instance.SubPause(isPause => 
+        {
+            this.isPause = isPause;
+        });
     }
 
     private void Update() 
     {
-        if(!isGameStart) return;
+        if(!isGameStart || isPause) return;
 
         if(deadSoundQueue.Count > 0)
         {
@@ -151,9 +180,18 @@ public class EnemyManager : MonoBehaviour
 
     private void UpgradeSpawnDelay()
     {
-        enemySpawnDelay += ENEMY_SPAWNDELAY_INCREMENT;
+        if(enemySpawnDelay - ENEMY_SPAWNDELAY_INCREMENT < ENEMY_SPAWNDELAY_MIN)
+        {
+            enemySpawnDelay = ENEMY_SPAWNDELAY_MIN;
+            GameManager.Aleart("적의 생성속도가 최고치입니다!");
 
-        GameManager.Aleart("적의 생성속도가 빨라졌습니다!");
+            upgradeList.Remove(UpgradeSpawnDelay);
+        }
+        else
+        {
+            enemySpawnDelay += ENEMY_SPAWNDELAY_INCREMENT;
+            GameManager.Aleart("적의 생성속도가 빨라졌습니다!");
+        }
 
         EnemySpawnDelayUpgraded(enemySpawnDelay);
     }

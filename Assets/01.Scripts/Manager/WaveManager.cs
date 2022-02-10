@@ -14,6 +14,7 @@ public class WaveManager : MonoBehaviour
     private Coroutine co;
 
     private bool isGameStart = false;
+    private bool isPause = false;
 
     private void Awake() 
     {
@@ -23,6 +24,7 @@ public class WaveManager : MonoBehaviour
         }
 
         isGameStart = false;
+        isPause = false;
     }
 
     private void Start() 
@@ -42,6 +44,16 @@ public class WaveManager : MonoBehaviour
         GameManager.Instance.SubGameOver(() =>
         {
             isGameStart = false;
+        });
+
+        GameManager.Instance.SubBackToMain(() => 
+        {
+            isGameStart = false;
+        });
+
+        GameManager.Instance.SubPause(isPause => 
+        {
+            this.isPause = isPause;
         });
 
         EnemyManager.Instance.SubUpgradeSpawnDelay(spawnDelay => 
@@ -74,8 +86,15 @@ public class WaveManager : MonoBehaviour
     {
         while(isGameStart)
         {
-            SpawnEnemyRandomPos(player.transform.position);
-            yield return ws;
+            if(!isPause)
+            {
+                SpawnEnemyRandomPos(player.transform.position);
+                yield return ws;
+            }
+            else
+            {
+                yield return null;
+            }
         }
     }
 }

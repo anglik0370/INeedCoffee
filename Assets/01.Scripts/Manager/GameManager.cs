@@ -20,6 +20,12 @@ public class GameManager : MonoBehaviour
     public LifeUIHandler lifeUIHandler;
     public KillCountUI killCountUI;
     public AleartUI aleartUI;
+    public GameOverPanel gameOverPanel;
+    public PausePanel pausePanel;
+
+    [Header("캔버스")]
+    public CanvasGroup mainCvs;
+    public CanvasGroup inGameCvs;
 
     [Header("풀매니저")]
     public Transform poolManagerTrm;
@@ -31,12 +37,18 @@ public class GameManager : MonoBehaviour
     [Header("킬카운트")]
     public int killCount;
 
+    [Header("생존시간")]
+    public float lifeTime;
+
     [Header("디버그")]
     public bool isInvincibility = false;
     
     //이벤트
     private Action GameStartActon = () => {};
     private Action GameOverAction = () => {};
+
+    private Action BackToMainAction = () => {};
+    private Action<bool> GamePauseAction = isPause => {};
 
     private void Awake() 
     {
@@ -50,18 +62,49 @@ public class GameManager : MonoBehaviour
         PoolManager.CreatePool<Catridge>(CatridgePreafab.gameObject, poolManagerTrm, 13);
         PoolManager.CreatePool<CatridgeDropSoundEffect>(catridgeDropSoundEffectPrefab.gameObject, poolManagerTrm, 10);
         PoolManager.CreatePool<PlayerHitSoundEffect>(playerHitSoundEffectPrefab.gameObject, poolManagerTrm, 3);
+
+        ChangeCvs(false);
     }
 
     private void Start() 
     {
         SubGameStart(() => 
         {
+            ChangeCvs(true);
+
             life = maxLife;
 
             lifeUIHandler.ReFillLife();
 
             killCount = 0;
             killCountUI.UpdateCountText(killCount);
+
+            player.transform.position = Vector3.zero;
+            player.gameObject.SetActive(true);
+        });
+
+        SubGameOver(() => 
+        {
+            player.gameObject.SetActive(false);
+            gameOverPanel.Open(killCount, Mathf.RoundToInt(lifeTime), 0, Mathf.RoundToInt((lifeTime * 2) * killCount));
+        });
+
+        pausePanel.SubPauseOnClick(() => 
+        {
+            GamePauseAction?.Invoke(true);
+        });
+
+        pausePanel.SubContunueOnClick(() => 
+        {
+            GamePauseAction?.Invoke(false);
+        });
+        
+        pausePanel.SubBackToMainOnClick(() => 
+        {
+            GamePauseAction?.Invoke(false);
+            BackToMainAction?.Invoke();
+
+            ChangeCvs(false);
         });
 
         life = maxLife;
@@ -82,9 +125,42 @@ public class GameManager : MonoBehaviour
         Instance.aleartUI.Aleart(msg);
     }
 
+    public void ChangeCvs(bool isNowMain)
+    {
+        if(isNowMain)
+        {
+            mainCvs.alpha = 0f;
+            mainCvs.interactable = false;
+            mainCvs.blocksRaycasts = false;
+
+            inGameCvs.alpha = 1f;
+            inGameCvs.interactable = true;
+            inGameCvs.blocksRaycasts = true;
+        }
+        else
+        {
+            mainCvs.alpha = 1f;
+            mainCvs.interactable = true;
+            mainCvs.blocksRaycasts = true;
+
+            inGameCvs.alpha = 0f;
+            inGameCvs.interactable = false;
+            inGameCvs.blocksRaycasts = false;
+        }
+    }
+
     public void GameStart()
     {
         GameStartActon?.Invoke();
+    }
+
+    public void QuitGame()
+    {
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #else
+        Application.Quit();
+        #endif
     }
 
     public void SubGameStart(Action Callback)
@@ -95,6 +171,16 @@ public class GameManager : MonoBehaviour
     public void SubGameOver(Action Callback)
     {
         GameOverAction += Callback;
+    }
+
+    public void SubBackToMain(Action Callback)
+    {
+        BackToMainAction += Callback;
+    }
+
+    public void SubPause(Action<bool> Callback)
+    {
+        GamePauseAction += Callback;
     }
 
     public void PlayerDamaged()

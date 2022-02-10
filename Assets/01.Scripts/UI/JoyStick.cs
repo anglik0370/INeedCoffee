@@ -19,10 +19,12 @@ public class JoyStick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     public bool isTouch = false;
 
     private bool isGameStart = false;
+    private bool isPause = false;
 
     private void Awake() 
     {
         isGameStart = false;
+        isPause = false;
     }
 
     private void Start() 
@@ -32,9 +34,18 @@ public class JoyStick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         GameManager.Instance.SubGameOver(() =>
         {
             isGameStart = false;
-
             isTouch = false;
-            player.Move(Vector3.zero);
+        });
+
+        GameManager.Instance.SubBackToMain(() => 
+        {
+            isGameStart = false;
+            isTouch = false;
+        });
+
+        GameManager.Instance.SubPause(isPause => 
+        {
+            this.isPause = isPause;
         });
 
         parentRect = GetComponent<RectTransform>();
@@ -66,7 +77,7 @@ public class JoyStick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     public void OnDrag(PointerEventData eventData)
     {
-        if(!isGameStart) return;
+        if(!isGameStart || isPause) return;
 
         OnTouch(eventData.position);
         isTouch = true;
@@ -74,7 +85,7 @@ public class JoyStick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if(!isGameStart) return;
+        if(!isGameStart || isPause) return;
 
         parentRect.transform.position = eventData.position;
 
@@ -84,7 +95,7 @@ public class JoyStick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if(!isGameStart) return;
+        if(!isGameStart || isPause) return;
 
         leverRect.localPosition = Vector2.zero;
 

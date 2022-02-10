@@ -9,15 +9,20 @@ public class InputPanel : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoi
     public CanvasGroup joyStickGroup;
 
     private bool isGameStart = false;
+    private bool isPause = false;
 
     private void Awake() 
     {
         isGameStart = false;
+        isPause = false;
     }
 
     private void Start() 
     {
-        GameManager.Instance.SubGameStart(() => isGameStart = true);
+        GameManager.Instance.SubGameStart(() => 
+        {
+            isGameStart = true;
+        });
 
         GameManager.Instance.SubGameOver(() =>
         {
@@ -27,11 +32,25 @@ public class InputPanel : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoi
             joyStickGroup.interactable = false;
             joyStickGroup.blocksRaycasts = false;
         });
+
+        GameManager.Instance.SubBackToMain(() => 
+        {
+            isGameStart = false;
+
+            joyStickGroup.alpha = 0f;
+            joyStickGroup.interactable = false;
+            joyStickGroup.blocksRaycasts = false;
+        });
+
+        GameManager.Instance.SubPause(isPause => 
+        {
+            this.isPause = isPause;
+        });
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if(!isGameStart) return;
+        if(!isGameStart || isPause) return;
 
         joyStickGroup.alpha = 1f;
         joyStickGroup.interactable = true;
@@ -44,14 +63,14 @@ public class InputPanel : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoi
 
     public void OnDrag(PointerEventData eventData)
     {
-        if(!isGameStart) return;
+        if(!isGameStart || isPause) return;
 
         joyStick.OnDrag(eventData);
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if(!isGameStart) return;
+        if(!isGameStart || isPause) return;
 
         joyStickGroup.alpha = 0f;
         joyStickGroup.interactable = false;

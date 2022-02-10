@@ -33,6 +33,8 @@ public class Enemy : MonoBehaviour
 
     public Queue<Action> damageQueue = new Queue<Action>();
 
+    private bool isPause = false;
+
     private void Awake() 
     {
         healthBar = GetComponentInChildren<HealthBar>();
@@ -56,10 +58,19 @@ public class Enemy : MonoBehaviour
         {
             this.speed = moveSpeed;
         });
+
+        GameManager.Instance.SubPause(isPause => 
+        {
+            this.isPause = isPause;
+        });
+
+        isPause = false;
     }
 
     private void Update() 
     {
+        if(isPause) return;
+
         dir = EnemyManager.Instance.GetTowardPlayerDir(transform.position);
 
         if(dir.x < 0)
@@ -112,7 +123,7 @@ public class Enemy : MonoBehaviour
         sr.material.SetInt("_IsMask", 0);
     }
 
-    private void OnDrawGizmos() 
+    private void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(transform.position, attackDistance);
     }

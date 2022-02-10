@@ -8,10 +8,12 @@ public class TimeManager : MonoBehaviour
 
     public TimerUI timerUI;
 
+    [SerializeField]
     private float timer;
     private float upgradeTimer;
 
     private bool isGameStart = false;
+    private bool isPause = false;
 
     private void Awake() 
     {
@@ -21,6 +23,7 @@ public class TimeManager : MonoBehaviour
         }
 
         isGameStart = false;
+        isPause = false;
     }
 
     private void Start() 
@@ -38,16 +41,23 @@ public class TimeManager : MonoBehaviour
             isGameStart = false;
         });
 
+        GameManager.Instance.SubPause(isPause => 
+        {
+            this.isPause = isPause;
+        });
+
         timer = 0f;
         upgradeTimer = EnemyManager.UPGRADE_DELAY;
     }
 
     private void Update() 
     {
-        if(!isGameStart) return;
+        if(!isGameStart || isPause) return;
 
         timer += Time.deltaTime;
         timerUI.SetTimerText(timer);
+
+        GameManager.Instance.lifeTime = timer;
 
         upgradeTimer -= Time.deltaTime;
 
