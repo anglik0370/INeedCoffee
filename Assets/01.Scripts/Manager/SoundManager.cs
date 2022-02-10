@@ -47,6 +47,8 @@ public class SoundManager : MonoBehaviour
         {
             inGameBGM.Stop();
             gameOverBGM.Play();
+
+            playerMoveSound.Stop();
         });
 
         GameManager.Instance.SubBackToMain(() => 
