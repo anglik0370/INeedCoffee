@@ -7274,7 +7274,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: INEEDCOFFE
+  m_Text: INEEDCOFFEE
 --- !u!222 &537880743
 CanvasRenderer:
   m_ObjectHideFlags: 0
