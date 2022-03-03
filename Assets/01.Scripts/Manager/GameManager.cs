@@ -10,7 +10,6 @@ public class GameManager : MonoBehaviour
     public Player player;
 
     [Header("프리팹")]
-    public Bullet bulletPrefab;
     public MuzzleFlash muzzleFlashPrefab;
     public Catridge CatridgePreafab;
     public CatridgeDropSoundEffect catridgeDropSoundEffectPrefab;
@@ -63,7 +62,6 @@ public class GameManager : MonoBehaviour
             Instance = this;
         }
 
-        PoolManager.CreatePool<Bullet>(bulletPrefab.gameObject, poolManagerTrm, 15);
         PoolManager.CreatePool<MuzzleFlash>(muzzleFlashPrefab.gameObject, poolManagerTrm, 10);
         PoolManager.CreatePool<Catridge>(CatridgePreafab.gameObject, poolManagerTrm, 13);
         PoolManager.CreatePool<CatridgeDropSoundEffect>(catridgeDropSoundEffectPrefab.gameObject, poolManagerTrm, 10);

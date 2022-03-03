@@ -32,6 +32,7 @@ public class Enemy : MonoBehaviour
     private float attackDistance;
 
     public Queue<Action> damageQueue = new Queue<Action>();
+    public Queue<Action> knockbackQueue = new Queue<Action>();
 
     private bool isPause = false;
 
@@ -64,6 +65,11 @@ public class Enemy : MonoBehaviour
             this.isPause = isPause;
         });
 
+        maxHp = EnemyManager.ORIGIN_ENEMY_HEALTH;
+        curHp = maxHp;
+
+        speed = EnemyManager.ORIGIN_ENEMY_MOVESPEED;
+
         isPause = false;
     }
 
@@ -90,9 +96,15 @@ public class Enemy : MonoBehaviour
             gameObject.SetActive(false);
         }
 
-        if(damageQueue.Count > 0)
+        while (damageQueue.Count > 0)
         {
             damageQueue.Dequeue()?.Invoke();
+        }
+
+        if (knockbackQueue.Count > 0)
+        {
+            knockbackQueue.Dequeue()?.Invoke();
+            knockbackQueue.Clear();
         }
     }
 
@@ -129,13 +141,13 @@ public class Enemy : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, attackDistance);
     }
 
-    public void OnDamage(float damage, Vector3 push)
+    public void Knockback(Vector2 push)
     {
-        //밀리는 효과
-        Vector2 dir = new Vector2(push.x, push.y);
+        rigid.AddForce(push, ForceMode2D.Impulse);
+    }
 
-        rigid.AddForce(dir, ForceMode2D.Impulse);
-
+    public void OnDamage(float damage)
+    {
         if(seq != null)
         {
             seq.Complete();

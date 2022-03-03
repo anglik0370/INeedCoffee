@@ -22,6 +22,8 @@ public class Bullet : MonoBehaviour
     private WaitForSeconds ws;
     private Coroutine co;
 
+    private bool isPaused = false;
+
     private void Awake() 
     {
         rigid = GetComponent<Rigidbody2D>();
@@ -29,10 +31,42 @@ public class Bullet : MonoBehaviour
         ws = new WaitForSeconds(disableTime);
     }
 
+    private void Start()
+    {
+        GameManager.Instance.SubPause(pause =>
+        {
+            isPaused = pause;
+        });
+
+        BulletManager.Instance.SubDamageUpgraded(damage =>
+        {
+            this.damage = damage;
+        });
+
+        BulletManager.Instance.SubSpeedUpgraded(speed =>
+        {
+            this.speed = speed;
+        });
+
+        BulletManager.Instance.SubPushPowerUpgraded(pushPower =>
+        {
+            this.pushPower = pushPower;
+        });
+
+        damage = BulletManager.ORIGIN_BULLET_DAMAGE;
+        speed = BulletManager.ORIGIN_BULLET_SPEED;
+        pushPower = BulletManager.ORIGIN_BULLET_PUSHPOWER;
+    }
+
     private void OnEnable() 
     {
+        damage = BulletManager.Instance.BulletDamage;
+        speed = BulletManager.Instance.BulletSpeed;
+        pushPower = BulletManager.Instance.BulletPushPower;
+
         co = StartCoroutine(DisableRoutine());
     }
+
     private void OnDisable() 
     {
         StopCoroutine(co);
@@ -45,7 +79,17 @@ public class Bullet : MonoBehaviour
         {
             Enemy enemy = other.gameObject.GetComponent<Enemy>();
 
-            enemy.damageQueue.Enqueue(() => enemy.OnDamage(damage, rigid.velocity.normalized * pushPower));
+            Vector2 pushDir = rigid.velocity.normalized * pushPower;
+
+            enemy.damageQueue.Enqueue(() =>
+            {
+                enemy.OnDamage(damage);
+            });
+
+            enemy.knockbackQueue.Enqueue(() =>
+            {
+                enemy.Knockback(pushDir);
+            });
 
             EnemyHitEffect hitEffect = PoolManager.GetItem<EnemyHitEffect>();
             hitEffect.SetPosition(transform.position);
