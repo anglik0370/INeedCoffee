@@ -8,6 +8,7 @@ public enum BulletUpgradeType
     AMOUNT,
     SPEED,
     PENETRATE,
+    KNOCKBACK,
 }
 
 [CreateAssetMenu(menuName = "ScriptableObject/BulletUpgradeSO", fileName = "new BulletUpgradeSO")]
@@ -15,5 +16,6 @@ public class BulletUpgradeSO : ScriptableObject
 {
     public BulletUpgradeType type;
     public string nameStr;
+    public Sprite sprite;
     public string explanationStr;
 }

@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     public AleartUI aleartUI;
     public GameOverPanel gameOverPanel;
     public PausePanel pausePanel;
+    public BulletUpgradeCards bulletUpgradeCards;
 
     [Header("캔버스")]
     public CanvasGroup mainCvs;
@@ -207,6 +208,11 @@ public class GameManager : MonoBehaviour
         GamePauseAction += Callback;
     }
 
+    public void OccurPause(bool pause)
+    {
+        GamePauseAction?.Invoke(pause);
+    }
+
     public void PlayerDamaged()
     {
         if(isInvincibility) return;
@@ -223,6 +229,12 @@ public class GameManager : MonoBehaviour
     public void EnemyDead()
     {
         killCount++;
+
+        if(killCount % 10 == 0)
+        {
+            bulletUpgradeCards.StartUpgrade();
+        }
+
         killCountUI.UpdateCountText(killCount);
     }
 }
