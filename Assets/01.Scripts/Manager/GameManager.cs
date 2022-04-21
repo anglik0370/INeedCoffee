@@ -230,10 +230,10 @@ public class GameManager : MonoBehaviour
     {
         killCount++;
 
-        if(killCount % 10 == 0)
-        {
-            bulletUpgradeCards.StartUpgrade();
-        }
+        //if(killCount % 10 == 0)
+        //{
+        //    bulletUpgradeCards.StartUpgrade();
+        //}
 
         killCountUI.UpdateCountText(killCount);
     }

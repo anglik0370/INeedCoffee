@@ -34,6 +34,14 @@ public class Gun : MonoBehaviour
         anim = GetComponent<Animator>();
     }
 
+    private void Start()
+    {
+        GameManager.Instance.SubGameStart(() =>
+        {
+            isPumped = true;
+        });
+    }
+
     public void SetAnimIsMove(bool isMove)
     {
         anim.SetBool("IsMove", isMove);

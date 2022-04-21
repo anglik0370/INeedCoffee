@@ -49,10 +49,10 @@ public class BulletManager : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            UpgradePushPower();
-        }
+        //if(Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    UpgradePushPower();
+        //}
     }
 
     private void Start()
